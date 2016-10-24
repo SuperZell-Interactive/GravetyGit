@@ -39,7 +39,7 @@ public class Fire : MonoBehaviour {
                     newt.AddComponent<Rigidbody2D>();
                     Rigidbody2D newtRB = newt.GetComponent<Rigidbody2D>();
                     newtRB.transform.position = new Vector2(Queco.transform.position.x, Queco.transform.position.y);
-                    newtRB.transform.rotation = Quaternion.identity;
+                    transform.rotation = Quaternion.identity;
                     disparar(newtRB, velBola);
                     loaded = false;
                 }
@@ -79,7 +79,7 @@ public class Fire : MonoBehaviour {
 
     void disparar(Rigidbody2D proyectil, float velocidad)
     {
-        Vector3 posPantalla = Camera.main.WorldToScreenPoint(transform.position);
+        Vector3 posPantalla = Camera.main.WorldToScreenPoint(Queco.transform.position);
         Vector3 direccion = (Input.mousePosition - posPantalla).normalized;
         proyectil.velocity = transform.TransformDirection(new Vector2(direccion.x, direccion.y) * velocidad);
     }

@@ -47,6 +47,7 @@ public class Jugador : MonoBehaviour {
 
     void subirNivel()
     {
+		PrefabManager.currentPrefabs.esferaExp.GetComponent<Animator> ().SetTrigger ("levUp");
         GlobalStats.currentStats.player_level += 1;
         GlobalStats.currentStats.player_max_health += 15;
         GlobalStats.currentStats.player_current_health = GlobalStats.currentStats.player_max_health;

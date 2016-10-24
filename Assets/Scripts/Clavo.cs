@@ -34,6 +34,9 @@ public class Clavo : MonoBehaviour {
             damage = setRandomDamage();
             col.gameObject.GetComponent<Enemigo>().golpeado(damage, isCrit);
         }
+		if (col.gameObject.tag == "Objeto") {
+			col.gameObject.GetComponent<Rigidbody2D> ().velocity = Vector2.zero;
+		}
         Destroy(this.gameObject);
 
     }

@@ -21,11 +21,12 @@ public class PrefabManager : MonoBehaviour
     public GameObject HUD_barra_exp;
     public GameObject HUD_barra_exp_fondo;
 	public GameObject trail;
+	public GameObject esferaExp;
 
     // Use this for initialization
     void Awake()
     {
-
+		Cursor.visible = false;
         if (currentPrefabs == null)
         {
             currentPrefabs = this;

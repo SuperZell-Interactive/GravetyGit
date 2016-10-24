@@ -10,6 +10,7 @@ public class GravChange : MonoBehaviour {
     public bool der = false;
     public bool gravitational;
     public bool rotatable;
+	public float gravitySmooth;
 
     public GameObject Queco;
     Rigidbody2D QuecoRig;
@@ -22,7 +23,7 @@ public class GravChange : MonoBehaviour {
 	void Start () {
         gravitational = false;
         gravity = -981f;
-        Queco = GameObject.FindGameObjectWithTag("Player");
+		Queco = PrefabManager.currentPrefabs.player;
         Queco.GetComponent<GravChange>().gravitational = true;
         miCF = this.gameObject.GetComponent<ConstantForce2D>();
         //Debug.Log("El valor constante del cuerpo " + this.gameObject.name + " es (" + miCF.force.x + ", " + miCF.force.y + ")");
@@ -41,7 +42,6 @@ public class GravChange : MonoBehaviour {
                     abajo = !abajo;
                     if(rotatable) transform.Rotate(Vector3.forward * 180);
                 }
-                //Physics2D.gravity = new Vector2(0f, -gravity);
                 if (der)
                 {
                     if (rotatable) transform.Rotate(Vector3.forward * 90);
@@ -53,14 +53,12 @@ public class GravChange : MonoBehaviour {
                     izq = !izq;
                 }
                 if (!arriba) arriba = !arriba;
+				this.GetComponent<Rigidbody2D> ().velocity *= gravitySmooth;
                 miCF.force = new Vector2(0, -gravity);
-                //Debug.Log("El valor constante del cuerpo " + this.gameObject.name + " es (" + miCF.force.x + ", " + miCF.force.y + ")");
             }
 
             if (Input.GetKeyDown(KeyCode.DownArrow))
             {
-
-                //Physics2D.gravity = new Vector2(0f, gravity);
                 if (arriba)
                 {
                     arriba = !arriba;
@@ -77,8 +75,8 @@ public class GravChange : MonoBehaviour {
                     der = !der;
                 }
                 if (!abajo) abajo = !abajo;
+				this.GetComponent<Rigidbody2D> ().velocity *= gravitySmooth;
                 miCF.force = new Vector2(0, gravity);
-                //Debug.Log("El valor constante del cuerpo " + this.gameObject.name + " es (" + miCF.force.x + ", " + miCF.force.y + ")");
             }
 
             if (Input.GetKey("escape")) Application.Quit();
@@ -100,11 +98,9 @@ public class GravChange : MonoBehaviour {
                     if (rotatable) transform.Rotate(Vector3.forward * 180);
                     der = !der;
                 }
-                //Physics2D.gravity = new Vector2(gravity, 0f);
-
                 if (!izq) izq = !izq;
+				this.GetComponent<Rigidbody2D> ().velocity *= gravitySmooth;
                 miCF.force = new Vector2(gravity, 0);
-                //Debug.Log("El valor constante del cuerpo " + this.gameObject.name + " es (" + miCF.force.x + ", " + miCF.force.y + ")");
             }
 
             if (Input.GetKeyDown(KeyCode.RightArrow))
@@ -124,9 +120,8 @@ public class GravChange : MonoBehaviour {
                     if (rotatable) transform.Rotate(Vector3.forward * 180);
                     izq = !izq;
                 }
-
+				this.GetComponent<Rigidbody2D> ().velocity *= gravitySmooth;
                 miCF.force = new Vector2(-gravity, 0);
-                //Debug.Log("El valor constante del cuerpo " + this.gameObject.name + " es (" + miCF.force.x + ", " + miCF.force.y + ")");
                 if (!der) der = !der;
             }
         }
