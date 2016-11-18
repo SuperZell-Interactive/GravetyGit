@@ -30,6 +30,7 @@ public class Enemigo : MonoBehaviour {
         //Debug.Log(player.transform.position);
         if (puntosVida <= 0)
         {
+            SoundManager.currentSounds.enemyDeath.Play();
             transform.localScale = new Vector2(0,0);
             PrefabManager.currentPrefabs.player.GetComponent<Jugador>().subirExp(expAtDeath);
             Destroy(this);

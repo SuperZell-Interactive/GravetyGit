@@ -22,6 +22,7 @@ public class Jugador : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        PrefabManager.currentPrefabs.HUD_barra_vida.GetComponent<RectTransform>().sizeDelta = new Vector2(GlobalStats.currentStats.player_current_health * 2, PrefabManager.currentPrefabs.HUD_barra_vida_fondo.GetComponent<RectTransform>().sizeDelta.y);
         PrefabManager.currentPrefabs.HUD_texto_nails.text = GlobalStats.currentStats.player_nails.ToString();
         PrefabManager.currentPrefabs.HUD_texto_nivel.text = GlobalStats.currentStats.player_level.ToString();
         PrefabManager.currentPrefabs.HUD_texto_vida.text = GlobalStats.currentStats.player_current_health.ToString() + " / " + GlobalStats.currentStats.player_max_health;
@@ -30,7 +31,6 @@ public class Jugador : MonoBehaviour {
     public void subirExp(int expSube)
     {
         GlobalStats.currentStats.player_current_exp += expSube;
-        // Debug.Log("He ganado " + expSube + " puntos de exp y ahora tengo " + exp + " puntos de exp.");
         if (GlobalStats.currentStats.player_current_exp >= GlobalStats.currentStats.player_exp_next_level)
         {
             subirNivel();
@@ -72,9 +72,6 @@ public class Jugador : MonoBehaviour {
 
         // Aumentamos el daño efectuado con el clavo;
         proyectil.GetComponent<Clavo>().bonusUp(4);
-
-        Debug.Log("Mi nivel es ahora " + nivel + ", me quedan " + exp + " puntos de exp y me quedan " + expNextLevel + " para subir de nivel." );
-
     }
 
     void InitPT(string text)

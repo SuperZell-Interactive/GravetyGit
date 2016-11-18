@@ -16,7 +16,9 @@ public class Fire : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         Queco = PrefabManager.currentPrefabs.player;
-        PrefabManager.currentPrefabs.newt.transform.localScale = new Vector2(0f, 0f);
+        PrefabManager.currentPrefabs.newt.transform.localScale = Vector2.zero;
+        PrefabManager.currentPrefabs.mochilaLlena.transform.localScale = new Vector2(0.9680524f, 0.9680524f);
+        PrefabManager.currentPrefabs.mochilaVacia.transform.localScale = Vector2.zero;
         loaded = true;
         GlobalStats.currentStats.objetoActivo = PrefabManager.currentPrefabs.player;
         velBola = 3000f;
@@ -29,17 +31,20 @@ public class Fire : MonoBehaviour {
         // Disparamos a Newt. Primero apuntamos y después disparamos.
         if (Input.GetMouseButton(1))
         {
-            PrefabManager.currentPrefabs.newt.transform.localScale = new Vector2(1f, 1f);
+            PrefabManager.currentPrefabs.mochilaLlena.transform.localScale = new Vector2(0f, 0f);
+            PrefabManager.currentPrefabs.mochilaVacia.transform.localScale = new Vector2(0.9680524f, 0.9680524f);
+            PrefabManager.currentPrefabs.newt.transform.localScale = new Vector2(0.3f, 0.3f);
+            PrefabManager.currentPrefabs.newt.transform.position = PrefabManager.currentPrefabs.puntoNewt.transform.position;
             if (Input.GetMouseButtonDown(0))
             {
                 if (PrefabManager.currentPrefabs.newt.GetComponent<Fire>().loaded != false)
                 {
                     GameObject newt = (GameObject) Instantiate(PrefabManager.currentPrefabs.newt, Queco.transform.localPosition, Quaternion.identity);
-                    newt.transform.localScale = new Vector2(10f, 10f);
+                    newt.transform.localScale = new Vector2(15f, 15f);
                     newt.AddComponent<Rigidbody2D>();
                     Rigidbody2D newtRB = newt.GetComponent<Rigidbody2D>();
-                    newtRB.transform.position = new Vector2(Queco.transform.position.x, Queco.transform.position.y);
-                    transform.rotation = Quaternion.identity;
+                    newtRB.transform.position = new Vector2(PrefabManager.currentPrefabs.puntoNewt.transform.position.x, PrefabManager.currentPrefabs.puntoNewt.transform.position.y);
+                    newtRB.transform.rotation = PrefabManager.currentPrefabs.puntoNewt.transform.localRotation;
                     disparar(newtRB, velBola);
                     loaded = false;
                 }
@@ -47,7 +52,13 @@ public class Fire : MonoBehaviour {
         }
         else
         {
-            PrefabManager.currentPrefabs.newt.transform.localScale = new Vector2(0f, 0f);
+            if (PrefabManager.currentPrefabs.newt.GetComponent<Fire>().loaded)
+            {
+                PrefabManager.currentPrefabs.mochilaLlena.transform.localScale = new Vector2(0.9680524f, 0.9680524f);
+                PrefabManager.currentPrefabs.mochilaVacia.transform.localScale = Vector2.zero;
+            }
+
+            PrefabManager.currentPrefabs.newt.transform.localScale = Vector2.zero;
             if (Input.GetMouseButtonDown(0))
             {
                 if (GlobalStats.currentStats.player_nails > 0)
@@ -55,7 +66,8 @@ public class Fire : MonoBehaviour {
                     GameObject clavo = (GameObject) Instantiate(PrefabManager.currentPrefabs.clavo, Queco.transform.localPosition, Quaternion.identity);
                     clavo.transform.localScale = new Vector2(10f, 10f);
                     Rigidbody2D clavoRB = clavo.GetComponent<Rigidbody2D>();
-                    clavoRB.transform.position = new Vector2(Queco.transform.position.x, Queco.transform.position.y);
+                    //clavoRB.transform.position = new Vector2(Queco.transform.position.x, Queco.transform.position.y);
+                    clavoRB.transform.position = new Vector2(PrefabManager.currentPrefabs.puntoDisparo.transform.position.x, PrefabManager.currentPrefabs.puntoDisparo.transform.position.y);
                     transform.rotation = Quaternion.identity;
                     dispararClavo(clavoRB, velClavo);
                 }
@@ -81,15 +93,24 @@ public class Fire : MonoBehaviour {
     {
         Vector3 posPantalla = Camera.main.WorldToScreenPoint(Queco.transform.position);
         Vector3 direccion = (Input.mousePosition - posPantalla).normalized;
-        proyectil.velocity = transform.TransformDirection(new Vector2(direccion.x, direccion.y) * velocidad);
+        if (PrefabManager.currentPrefabs.player.transform.localScale.x < 0)
+            proyectil.velocity = transform.TransformDirection(new Vector2(-direccion.x, direccion.y) * velocidad);
+        else
+            proyectil.velocity = transform.TransformDirection(new Vector2(direccion.x, direccion.y) * velocidad);
     }
 
     void dispararClavo(Rigidbody2D proyectil, float velocidad)
     {
-        Vector3 posPantalla = Camera.main.WorldToScreenPoint(Queco.transform.position);
+        SoundManager.currentSounds.nailShoot.Play();
+        Vector3 posPantalla = Camera.main.WorldToScreenPoint(PrefabManager.currentPrefabs.puntoDisparo.transform.position);
         Vector3 direccion = (Input.mousePosition - posPantalla).normalized;
         proyectil.GetComponent<Clavo>().setRandomDamage();
-        proyectil.velocity = transform.TransformDirection(new Vector2(direccion.x, direccion.y) * velocidad);
+        //proyectil.velocity = transform.TransformDirection(new Vector2(direccion.x, direccion.y) * velocidad);
+        if (PrefabManager.currentPrefabs.player.transform.localScale.x < 0)
+            proyectil.velocity = transform.TransformDirection(new Vector2(-direccion.x, direccion.y) * velocidad);
+        else
+            proyectil.velocity = transform.TransformDirection(new Vector2(direccion.x, direccion.y) * velocidad);
+
         GlobalStats.currentStats.player_nails--;
         //proyectil.AddForce(direccion * velocidad, ForceMode2D.Impulse);
     }

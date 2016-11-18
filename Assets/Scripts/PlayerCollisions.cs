@@ -30,12 +30,26 @@ public class PlayerCollisions : MonoBehaviour {
             GlobalStats.currentStats.player_nails += 10;
             col.gameObject.transform.localScale = new Vector2(0, 0);
         }
+
+        // Nos chocamos contra un enemigo
         if (col.gameObject.tag == "Enemy")
         {
+            SoundManager.currentSounds.EloiseHit.Play();
             int direction = comprobarDireccionColision(this.gameObject, col.gameObject);
             this.GetComponent<Rigidbody2D>().velocity = new Vector2(pullx * direction, pully);
             int damageHit = col.gameObject.GetComponent<Enemigo>().minDamage;
             this.GetComponent<Jugador>().getDamage(damageHit);
+        }
+
+        // Cogemos un objeto de curación
+        if (col.gameObject.tag == "Lifebox")
+        {
+            int lifeAmount = col.gameObject.GetComponent<LifeBox>().lifeAmount;
+            if (GlobalStats.currentStats.player_max_health - lifeAmount < GlobalStats.currentStats.player_current_health)
+                GlobalStats.currentStats.player_current_health = GlobalStats.currentStats.player_max_health;
+            else
+                GlobalStats.currentStats.player_current_health += lifeAmount;
+            col.gameObject.transform.localScale = new Vector2(0, 0);
         }
     }
 

@@ -9,10 +9,9 @@ public class PistolaBola : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        newt = GameObject.FindGameObjectWithTag("Robot");
-        player = GameObject.FindGameObjectWithTag("Player");
+        newt = PrefabManager.currentPrefabs.newt;
+        player = PrefabManager.currentPrefabs.player;
         Vector2 posicionJugador = player.transform.position;
-        newt.transform.position = new Vector2(posicionJugador.x, posicionJugador.y);
 	}
 	
 	// Update is called once per frame

@@ -10,6 +10,11 @@ public class PrefabManager : MonoBehaviour
     public GameObject clavo;
     public GameObject newt;
     public GameObject player;
+    public GameObject mochilaLlena;
+    public GameObject mochilaVacia;
+    public GameObject idleEloise;
+    public GameObject puntoDisparo;
+    public GameObject puntoNewt;
 
     public Text HUD_texto_vida;
     public Text HUD_texto_nivel;

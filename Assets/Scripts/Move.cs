@@ -9,15 +9,19 @@ public class Move : MonoBehaviour {
     public bool isFacingRight;
     public bool isFacingDown;
     public SpriteRenderer mySpriteRenderer;
-	public Vector2 jumDir = Vector2.zero;
+    private SpriteRenderer mochilaLlenaSR;
+    private SpriteRenderer mochilaVaciaSR;
+    public Vector2 jumDir = Vector2.zero;
 
 	// Use this for initialization
 	void Start () {
         isFacingRight = false;
         isFacingDown = false;
         mySpriteRenderer = this.gameObject.GetComponent<SpriteRenderer>();
-	
-	}
+        mochilaVaciaSR = PrefabManager.currentPrefabs.mochilaVacia.GetComponent<SpriteRenderer>();
+        mochilaLlenaSR = PrefabManager.currentPrefabs.mochilaLlena.GetComponent<SpriteRenderer>();
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -35,7 +39,11 @@ public class Move : MonoBehaviour {
                 if (gravitacional.abajo) isFacingRight = false;
                 else isFacingRight = true;
 			}
-            mySpriteRenderer.flipX = isFacingRight;
+            if (gravitacional.abajo)
+                this.gameObject.transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+            else if (gravitacional.arriba)
+                this.gameObject.transform.localScale = new Vector2(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
+
         }
 
         if (Input.GetKey (KeyCode.A)) {
@@ -44,8 +52,11 @@ public class Move : MonoBehaviour {
                 if (gravitacional.abajo) isFacingRight = true;
                 else isFacingRight = false;
 			}
-            mySpriteRenderer.flipX = isFacingRight;
-		}
+            if (gravitacional.abajo)
+                this.gameObject.transform.localScale = new Vector2(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
+            else if (gravitacional.arriba)
+                this.gameObject.transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+        }
 
 		if(Input.GetKey (KeyCode.W)){
 			if(gravitacional.izq || gravitacional.der)
@@ -54,8 +65,11 @@ public class Move : MonoBehaviour {
                 if (gravitacional.der) isFacingRight = false;
                 else isFacingRight = true;
 			}
-            mySpriteRenderer.flipX = isFacingRight;
-		}
+            if (gravitacional.izq)
+                this.gameObject.transform.localScale = new Vector2(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
+            else if (gravitacional.der)
+                this.gameObject.transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+        }
 
 		if(Input.GetKey (KeyCode.S)){
 			if(gravitacional.izq || gravitacional.der)
@@ -64,8 +78,11 @@ public class Move : MonoBehaviour {
                 if (gravitacional.izq) isFacingRight = false;
                 else isFacingRight = true;
 			}
-            mySpriteRenderer.flipX = isFacingRight;
-		}
+            if (gravitacional.der)
+                this.gameObject.transform.localScale = new Vector2(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
+            else if (gravitacional.izq)
+                this.gameObject.transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+        }
 
         if (Input.GetKeyDown (KeyCode.Space)) {
 			if (gravitacional.abajo)
@@ -77,5 +94,6 @@ public class Move : MonoBehaviour {
 			if(gravitacional.der)
                 QuecoRig.velocity = new Vector2(-jumpSpeed, 0);
 		}
-	}
+
+    }
 }

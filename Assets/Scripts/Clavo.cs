@@ -29,8 +29,10 @@ public class Clavo : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D col)
     {
+        Debug.Log(col.gameObject.name);
         if (col.gameObject.tag == "Enemy")
         {
+            SoundManager.currentSounds.enemyHit.Play();
             damage = setRandomDamage();
             col.gameObject.GetComponent<Enemigo>().golpeado(damage, isCrit);
         }
@@ -60,7 +62,6 @@ public class Clavo : MonoBehaviour {
     {
         GlobalStats.currentStats.minDamage += bonusValue;
         GlobalStats.currentStats.maxDamage += bonusValue;
-        Debug.Log("Nuevo daño: " + this.gameObject.GetComponent<Clavo>().damageMin + " , " + this.gameObject.GetComponent<Clavo>().damageMax);
     }
 
 	public void OnDestroy()

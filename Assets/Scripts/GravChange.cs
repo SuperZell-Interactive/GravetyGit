@@ -25,9 +25,7 @@ public class GravChange : MonoBehaviour {
         gravity = -981f;
 		Queco = PrefabManager.currentPrefabs.player;
         Queco.GetComponent<GravChange>().gravitational = true;
-        miCF = this.gameObject.GetComponent<ConstantForce2D>();
-        //Debug.Log("El valor constante del cuerpo " + this.gameObject.name + " es (" + miCF.force.x + ", " + miCF.force.y + ")");
-        //Debug.Log("El valor gravitational de " + this.gameObject.name + " es " + this.gameObject.GetComponent<GravChange>().gravitational); 
+        miCF = this.gameObject.GetComponent<ConstantForce2D>(); 
 	}
 	
 	// Update is called once per frame
@@ -54,7 +52,7 @@ public class GravChange : MonoBehaviour {
                 }
                 if (!arriba) arriba = !arriba;
 				this.GetComponent<Rigidbody2D> ().velocity *= gravitySmooth;
-                miCF.force = new Vector2(0, -gravity);
+                miCF.force = new Vector2(0, Mathf.Abs(gravity));
             }
 
             if (Input.GetKeyDown(KeyCode.DownArrow))
@@ -76,7 +74,7 @@ public class GravChange : MonoBehaviour {
                 }
                 if (!abajo) abajo = !abajo;
 				this.GetComponent<Rigidbody2D> ().velocity *= gravitySmooth;
-                miCF.force = new Vector2(0, gravity);
+                miCF.force = new Vector2(0, -Mathf.Abs(gravity));
             }
 
             if (Input.GetKey("escape")) Application.Quit();
@@ -100,7 +98,7 @@ public class GravChange : MonoBehaviour {
                 }
                 if (!izq) izq = !izq;
 				this.GetComponent<Rigidbody2D> ().velocity *= gravitySmooth;
-                miCF.force = new Vector2(gravity, 0);
+                miCF.force = new Vector2(-Mathf.Abs(gravity), 0);
             }
 
             if (Input.GetKeyDown(KeyCode.RightArrow))
@@ -121,7 +119,7 @@ public class GravChange : MonoBehaviour {
                     izq = !izq;
                 }
 				this.GetComponent<Rigidbody2D> ().velocity *= gravitySmooth;
-                miCF.force = new Vector2(-gravity, 0);
+                miCF.force = new Vector2(Mathf.Abs(gravity), 0);
                 if (!der) der = !der;
             }
         }
