@@ -9,31 +9,42 @@ public class Fire : MonoBehaviour {
     public bool loaded;
     public GameObject objetoActivo;
     public int offsetRotacion;
+	public Material[] materials;
+	public Sprite[] sprites;
 
     private float velBola;
     private float velClavo;
+    private GameObject newtGrabbed;
 
 	// Use this for initialization
 	void Start () {
-        Queco = PrefabManager.currentPrefabs.player;
+        Queco = GlobalStats.currentStats.jugador;
         PrefabManager.currentPrefabs.newt.transform.localScale = Vector2.zero;
-        PrefabManager.currentPrefabs.mochilaLlena.transform.localScale = new Vector2(0.9680524f, 0.9680524f);
+        PrefabManager.currentPrefabs.mochilaLlena.transform.localScale = new Vector2(0.7680524f, 0.7680524f);
         PrefabManager.currentPrefabs.mochilaVacia.transform.localScale = Vector2.zero;
         loaded = true;
-        GlobalStats.currentStats.objetoActivo = PrefabManager.currentPrefabs.player;
+        GlobalStats.currentStats.objetoActivo = GlobalStats.currentStats.jugador;
         velBola = 3000f;
         velClavo = 4000f;
+        newtGrabbed = PrefabManager.currentPrefabs.newtAgarrado;
+        newtGrabbed.SetActive(false);
 
-	}
+    }
 	
 	// Update is called once per frame
 	void Update () {
         // Disparamos a Newt. Primero apuntamos y después disparamos.
-        if (Input.GetMouseButton(1))
+        if(newtGrabbed.activeSelf)
+        {
+            newtGrabbed.transform.position = GlobalStats.currentStats.objetoActivo.transform.position;
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift))
         {
             PrefabManager.currentPrefabs.mochilaLlena.transform.localScale = new Vector2(0f, 0f);
-            PrefabManager.currentPrefabs.mochilaVacia.transform.localScale = new Vector2(0.9680524f, 0.9680524f);
-            PrefabManager.currentPrefabs.newt.transform.localScale = new Vector2(0.3f, 0.3f);
+            PrefabManager.currentPrefabs.mochilaVacia.transform.localScale = new Vector2(0.7680524f, 0.7680524f);
+            PrefabManager.currentPrefabs.newt.transform.localScale = new Vector2(0.5f, 0.5f);
+			PrefabManager.currentPrefabs.brazoDisparo.GetComponent<SpriteRenderer> ().sprite = sprites [1];
             PrefabManager.currentPrefabs.newt.transform.position = PrefabManager.currentPrefabs.puntoNewt.transform.position;
             if (Input.GetMouseButtonDown(0))
             {
@@ -44,7 +55,7 @@ public class Fire : MonoBehaviour {
                     newt.AddComponent<Rigidbody2D>();
                     Rigidbody2D newtRB = newt.GetComponent<Rigidbody2D>();
                     newtRB.transform.position = new Vector2(PrefabManager.currentPrefabs.puntoNewt.transform.position.x, PrefabManager.currentPrefabs.puntoNewt.transform.position.y);
-                    newtRB.transform.rotation = PrefabManager.currentPrefabs.puntoNewt.transform.localRotation;
+                    transform.rotation = Quaternion.identity;
                     disparar(newtRB, velBola);
                     loaded = false;
                 }
@@ -54,10 +65,10 @@ public class Fire : MonoBehaviour {
         {
             if (PrefabManager.currentPrefabs.newt.GetComponent<Fire>().loaded)
             {
-                PrefabManager.currentPrefabs.mochilaLlena.transform.localScale = new Vector2(0.9680524f, 0.9680524f);
+                PrefabManager.currentPrefabs.mochilaLlena.transform.localScale = new Vector2(0.7680524f, 0.7680524f);
                 PrefabManager.currentPrefabs.mochilaVacia.transform.localScale = Vector2.zero;
             }
-
+			PrefabManager.currentPrefabs.brazoDisparo.GetComponent<SpriteRenderer> ().sprite = sprites [0];
             PrefabManager.currentPrefabs.newt.transform.localScale = Vector2.zero;
             if (Input.GetMouseButtonDown(0))
             {
@@ -79,21 +90,23 @@ public class Fire : MonoBehaviour {
 
         // Recargamos a Newt en su posición
         if (Input.GetKeyDown(KeyCode.R)){
-            if (GlobalStats.currentStats.objetoActivo != PrefabManager.currentPrefabs.player)
+            if (GlobalStats.currentStats.objetoActivo != GlobalStats.currentStats.jugador)
             {
+                newtGrabbed.SetActive(false);
                 GlobalStats.currentStats.objetoActivo.GetComponent<GravChange>().gravitational = false;
                 PrefabManager.currentPrefabs.newt.GetComponent<Fire>().loaded = true;
+				GlobalStats.currentStats.objetoActivo.GetComponent<Renderer> ().material = materials [1];
                 GlobalStats.currentStats.objetoActivo = Queco;
-                PrefabManager.currentPrefabs.player.GetComponent<GravChange>().gravitational = true;
+                GlobalStats.currentStats.jugador.GetComponent<GravChange>().gravitational = true;
             }
         }
 	}
 
     void disparar(Rigidbody2D proyectil, float velocidad)
     {
-        Vector3 posPantalla = Camera.main.WorldToScreenPoint(Queco.transform.position);
+        Vector3 posPantalla = Camera.main.WorldToScreenPoint(PrefabManager.currentPrefabs.puntoNewt.transform.position);
         Vector3 direccion = (Input.mousePosition - posPantalla).normalized;
-        if (PrefabManager.currentPrefabs.player.transform.localScale.x < 0)
+        if (GlobalStats.currentStats.jugador.transform.localScale.x < 0)
             proyectil.velocity = transform.TransformDirection(new Vector2(-direccion.x, direccion.y) * velocidad);
         else
             proyectil.velocity = transform.TransformDirection(new Vector2(direccion.x, direccion.y) * velocidad);
@@ -106,7 +119,7 @@ public class Fire : MonoBehaviour {
         Vector3 direccion = (Input.mousePosition - posPantalla).normalized;
         proyectil.GetComponent<Clavo>().setRandomDamage();
         //proyectil.velocity = transform.TransformDirection(new Vector2(direccion.x, direccion.y) * velocidad);
-        if (PrefabManager.currentPrefabs.player.transform.localScale.x < 0)
+        if (GlobalStats.currentStats.jugador.transform.localScale.x < 0)
             proyectil.velocity = transform.TransformDirection(new Vector2(-direccion.x, direccion.y) * velocidad);
         else
             proyectil.velocity = transform.TransformDirection(new Vector2(direccion.x, direccion.y) * velocidad);
@@ -119,15 +132,22 @@ public class Fire : MonoBehaviour {
     {
         if (col.gameObject.tag == "Scenario")
         {
-            PrefabManager.currentPrefabs.newt.GetComponent<Fire>().loaded = true;
-            Destroy(this.gameObject);
+            if (this.GetComponent<Rigidbody2D>().velocity.x > 500 || this.GetComponent<Rigidbody2D>().velocity.y > 500)
+            {
+                PrefabManager.currentPrefabs.newt.GetComponent<Fire>().loaded = true;
+                Destroy(this.gameObject);
+            }
             //Debug.Log("LOADED es " + loaded);
         }
-        else if (col.gameObject.tag == "Objeto")
+		else if (col.gameObject.tag == "Objeto" || col.gameObject.tag == "Enemy" || col.gameObject.tag == "Puerta")
         {
+			GlobalStats.currentStats.objetoActivo.GetComponent<Renderer> ().material = materials [1];
             GlobalStats.currentStats.objetoActivo = col.gameObject;
+			GlobalStats.currentStats.objetoActivo.GetComponent<Renderer> ().material = materials [0];
+            newtGrabbed.SetActive(true);
+            newtGrabbed.transform.position = GlobalStats.currentStats.objetoActivo.transform.position;
             GlobalStats.currentStats.objetoActivo.GetComponent<GravChange>().gravitational = true;
-            PrefabManager.currentPrefabs.player.GetComponent<GravChange>().gravitational = false;
+            GlobalStats.currentStats.jugador.GetComponent<GravChange>().gravitational = false;
             PrefabManager.currentPrefabs.newt.GetComponent<Fire>().loaded = false;
             Destroy(this.gameObject);
         }

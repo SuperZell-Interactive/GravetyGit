@@ -10,13 +10,7 @@ public class PistolaBola : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         newt = PrefabManager.currentPrefabs.newt;
-        player = PrefabManager.currentPrefabs.player;
-        Vector2 posicionJugador = player.transform.position;
+        player = GlobalStats.currentStats.jugador;
 	}
-	
-	// Update is called once per frame
-	void Update () {
-
-    }
 
 }

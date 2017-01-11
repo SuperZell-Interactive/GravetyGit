@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class Jugador : MonoBehaviour {
 
+	public static Jugador player;
+
     public int nivel, exp, expNextLevel, current_health, max_health;
     public Text contadorClavos;
     public Text contadorNivel;
@@ -14,15 +16,41 @@ public class Jugador : MonoBehaviour {
     // GameObjects de las barras de vida;
     public GameObject puntosVida;
 
-	// Use this for initialization
-	void Start () {
-        GlobalStats.currentStats.objetoActivo = this.gameObject;
+	void Start()
+	{
+		if (player == null) {
+			player = this;
+			if (Application.loadedLevelName != "GameOver")
+				DontDestroyOnLoad (transform.gameObject);
+		} else {
+			if (player != this) {
+				Destroy (this.gameObject);
+			}
+		}
+	}
 
+    void OnLevelWasLoaded()
+    {
+        if ((Application.loadedLevelName == "MenuPrincipal" && player != null) || Application.loadedLevelName == "GameOver")
+            Destroy(this.gameObject);
+        if (player == null)
+        {
+            player = this;
+            if (Application.loadedLevelName != "GameOver")
+                DontDestroyOnLoad(transform.gameObject);
+        }
+        else
+        {
+            if (player != this)
+            {
+                Destroy(this.gameObject);
+            }
+        }
     }
 	
 	// Update is called once per frame
 	void Update () {
-        PrefabManager.currentPrefabs.HUD_barra_vida.GetComponent<RectTransform>().sizeDelta = new Vector2(GlobalStats.currentStats.player_current_health * 2, PrefabManager.currentPrefabs.HUD_barra_vida_fondo.GetComponent<RectTransform>().sizeDelta.y);
+        PrefabManager.currentPrefabs.HUD_barra_vida.GetComponent<RectTransform>().sizeDelta = new Vector2(GlobalStats.currentStats.player_current_health * 2, PrefabManager.currentPrefabs.HUD_barra_vida.GetComponent<RectTransform>().sizeDelta.y);
         PrefabManager.currentPrefabs.HUD_texto_nails.text = GlobalStats.currentStats.player_nails.ToString();
         PrefabManager.currentPrefabs.HUD_texto_nivel.text = GlobalStats.currentStats.player_level.ToString();
         PrefabManager.currentPrefabs.HUD_texto_vida.text = GlobalStats.currentStats.player_current_health.ToString() + " / " + GlobalStats.currentStats.player_max_health;
@@ -84,7 +112,7 @@ public class Jugador : MonoBehaviour {
         tempRect.transform.localPosition = ptPrefab.transform.localPosition;
         tempRect.transform.localScale = ptPrefab.transform.localPosition;
         tempRect.transform.localRotation = ptPrefab.transform.localRotation;
-        temp.GetComponent<Animator>().SetTrigger("ExpUp");
+        //temp.GetComponent<Animator>().SetTrigger("ExpUp");
         Destroy(temp.gameObject, 2);
     }
 
@@ -94,6 +122,7 @@ public class Jugador : MonoBehaviour {
         PrefabManager.currentPrefabs.HUD_barra_vida.GetComponent<RectTransform>().sizeDelta = new Vector2(PrefabManager.currentPrefabs.HUD_barra_vida.GetComponent<RectTransform>().sizeDelta.x - (damage*2), PrefabManager.currentPrefabs.HUD_barra_vida.GetComponent<RectTransform>().sizeDelta.y);
         if (GlobalStats.currentStats.player_current_health <= 0)
         {
+			Camera.main.orthographicSize = 240.4f;
             SceneManager.LoadScene("GameOver");
         }
     }

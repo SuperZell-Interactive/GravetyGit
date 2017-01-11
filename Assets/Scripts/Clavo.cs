@@ -18,7 +18,7 @@ public class Clavo : MonoBehaviour {
 		trail.transform.parent = this.transform;
         damageMin = GlobalStats.currentStats.minDamage;
         damageMax = GlobalStats.currentStats.maxDamage;
-        Physics2D.IgnoreCollision(PrefabManager.currentPrefabs.player.GetComponent<Collider2D>(), GetComponent<Collider2D>());
+		Physics2D.IgnoreCollision(GlobalStats.currentStats.jugador.GetComponent<Collider2D>(), GetComponent<Collider2D>());
         Physics2D.IgnoreCollision(PrefabManager.currentPrefabs.newt.GetComponent<Collider2D>(), GetComponent<Collider2D>());
     }
 	

@@ -12,6 +12,13 @@ public class GravChange : MonoBehaviour {
     public bool rotatable;
 	public float gravitySmooth;
 
+    //Esto nos va a permitir cambiar la gravedad con el ratón.
+    //posicionInicial es la posición inicial del personaje
+    //posicionFinal es la posición donde soltamos el botón izquierdo del ratón
+    //direccionGravedad es el vector con el que vamos a trabajar para obtener los cambios
+    private Vector3 posicionInicial, posicionFinal;
+    private Vector2 direccionGravedad;
+
     public GameObject Queco;
     Rigidbody2D QuecoRig;
 
@@ -23,7 +30,8 @@ public class GravChange : MonoBehaviour {
 	void Start () {
         gravitational = false;
         gravity = -981f;
-		Queco = PrefabManager.currentPrefabs.player;
+        direccionGravedad = new Vector2(0, -1);
+		Queco = GlobalStats.currentStats.jugador;
         Queco.GetComponent<GravChange>().gravitational = true;
         miCF = this.gameObject.GetComponent<ConstantForce2D>(); 
 	}
@@ -33,95 +41,123 @@ public class GravChange : MonoBehaviour {
     {
         if (this.gameObject.GetComponent<GravChange>().gravitational == true)
         {
-            if (Input.GetKeyDown(KeyCode.UpArrow))
+            if(Input.GetMouseButton(1))
             {
-                if (abajo)
+                Time.timeScale = 0.1f;
+                posicionInicial = Camera.main.WorldToScreenPoint(Queco.transform.position);
+            }
+            if (Input.GetMouseButtonUp(1))
+            {
+                Time.timeScale = 1;
+                posicionFinal = Input.mousePosition;
+                direccionGravedad = obtenerDireccionGravedad(posicionInicial, posicionFinal);
+            }
+
+            if (direccionGravedad.y == 1 && !arriba)
+            {
+                if (this.gameObject.GetComponent<GravChange>().abajo)
                 {
-                    abajo = !abajo;
+                    this.gameObject.GetComponent<GravChange>().abajo = !abajo;
                     if(rotatable) transform.Rotate(Vector3.forward * 180);
                 }
-                if (der)
+                else if (this.gameObject.GetComponent<GravChange>().der)
                 {
                     if (rotatable) transform.Rotate(Vector3.forward * 90);
                     der = !der;
                 }
-                if (izq)
+                else if (this.gameObject.GetComponent<GravChange>().izq)
                 {
                     if (rotatable) transform.Rotate(Vector3.forward * -90);
                     izq = !izq;
                 }
-                if (!arriba) arriba = !arriba;
-				this.GetComponent<Rigidbody2D> ().velocity *= gravitySmooth;
+                else if (!this.gameObject.GetComponent<GravChange>().arriba) arriba = !arriba;
+                this.GetComponent<Rigidbody2D>().velocity *= gravitySmooth;
                 miCF.force = new Vector2(0, Mathf.Abs(gravity));
             }
 
-            if (Input.GetKeyDown(KeyCode.DownArrow))
+            if (direccionGravedad.y == -1 && !abajo)
             {
-                if (arriba)
+                if (this.gameObject.GetComponent<GravChange>().arriba)
                 {
                     arriba = !arriba;
                     if (rotatable) transform.Rotate(Vector3.forward * 180);
                 }
-                if (izq)
+                else if (this.gameObject.GetComponent<GravChange>().izq)
                 {
                     if (rotatable) transform.Rotate(Vector3.forward * 90);
                     izq = !izq;
                 }
-                if (der)
+                else if (this.gameObject.GetComponent<GravChange>().der)
                 {
                     if (rotatable) transform.Rotate(Vector3.forward * -90);
                     der = !der;
                 }
-                if (!abajo) abajo = !abajo;
-				this.GetComponent<Rigidbody2D> ().velocity *= gravitySmooth;
+                else if (!this.gameObject.GetComponent<GravChange>().abajo) abajo = !abajo;
+                this.GetComponent<Rigidbody2D>().velocity *= gravitySmooth;
                 miCF.force = new Vector2(0, -Mathf.Abs(gravity));
             }
 
             if (Input.GetKey("escape")) Application.Quit();
 
-            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            if (direccionGravedad.x == -1 && !izq)
             {
-                if (abajo)
+                if (this.gameObject.GetComponent<GravChange>().abajo)
                 {
                     if (rotatable) transform.Rotate(Vector3.forward * -90);
                     abajo = !abajo;
                 }
-                if (arriba)
+                else if (this.gameObject.GetComponent<GravChange>().arriba)
                 {
                     if (rotatable) transform.Rotate(Vector3.forward * 90);
                     arriba = !arriba;
                 }
-                if (der)
+                else if (this.gameObject.GetComponent<GravChange>().der)
                 {
                     if (rotatable) transform.Rotate(Vector3.forward * 180);
                     der = !der;
                 }
-                if (!izq) izq = !izq;
-				this.GetComponent<Rigidbody2D> ().velocity *= gravitySmooth;
+                else if (!this.gameObject.GetComponent<GravChange>().izq) izq = !izq;
+                this.GetComponent<Rigidbody2D>().velocity *= gravitySmooth;
                 miCF.force = new Vector2(-Mathf.Abs(gravity), 0);
             }
 
-            if (Input.GetKeyDown(KeyCode.RightArrow))
+            if (direccionGravedad.x == 1 && !der)
             {
                 if (abajo)
                 {
                     if (rotatable) transform.Rotate(Vector3.forward * 90);
                     abajo = !abajo;
                 }
-                if (arriba)
+                else if (arriba)
                 {
                     if (rotatable) transform.Rotate(Vector3.forward * -90);
                     arriba = !arriba;
                 }
-                if (izq)
+                else if (izq)
                 {
                     if (rotatable) transform.Rotate(Vector3.forward * 180);
                     izq = !izq;
                 }
+                if (!this.gameObject.GetComponent<GravChange>().der) der = !der;
 				this.GetComponent<Rigidbody2D> ().velocity *= gravitySmooth;
                 miCF.force = new Vector2(Mathf.Abs(gravity), 0);
-                if (!der) der = !der;
             }
         }
     }
+
+    Vector2 obtenerDireccionGravedad(Vector3 posicionInicial, Vector3 posicionFinal)
+    {
+        Vector2 diferencia = (posicionFinal - posicionInicial).normalized;
+        if(Mathf.Abs(diferencia.x) > Mathf.Abs(diferencia.y))
+        {
+            if (diferencia.x > 0) return new Vector2(1, 0);
+            else return new Vector2(-1, 0);
+        }
+        else
+        {
+            if (diferencia.y > 0) return new Vector2(0, 1);
+            else return new Vector2(0, -1);
+        }
+    }
+		
 }

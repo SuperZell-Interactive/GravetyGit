@@ -10,12 +10,8 @@ public class AlphaChange : MonoBehaviour {
         if (col.gameObject.tag == "Player")
         {
             this.gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
-            Physics2D.IgnoreCollision(jugador.GetComponent<BoxCollider2D>(), GetComponent<BoxCollider2D>());
-
-        }
-        else
-        {
-            this.gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+            this.gameObject.GetComponent<BoxCollider2D>().size = new Vector2(0f, 0f);
         }
     }
+		
 }

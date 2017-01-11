@@ -19,12 +19,11 @@ public class Lock : MonoBehaviour {
         targetPos.z = 0;
         transform.position = targetPos;
 
-        if (Input.GetMouseButton(1))
+        if (Input.GetKey(KeyCode.LeftShift))
         {
             spriteRender = GetComponent<SpriteRenderer>();
             spriteRender.color = new Color(0.75f, 0.5f, 0.75f, 1f);
-        }
-        if (Input.GetMouseButtonUp(1))
+        }else
         {
             spriteRender = GetComponent<SpriteRenderer>();
             spriteRender.color = new Color(1f, 1f, 1f, 1f);

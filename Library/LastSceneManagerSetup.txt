@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/GRAVETY_TEST.unity
+- path: Assets/Scenes/MenuPrincipal.unity
   isLoaded: 1
   isActive: 1

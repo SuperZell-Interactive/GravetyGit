@@ -31,6 +31,12 @@ public class Move : MonoBehaviour {
 		GravChange gravitacional = GetComponent<GravChange> ();
 		//Obtenemos el Rigid Body del Queco para que al saltar le podamos aplicar fuerzas.
 		Rigidbody2D QuecoRig = this.gameObject.GetComponent<Rigidbody2D> ();
+        //Vamos a obtener la velocidad del personaje en todo momento para controlar la velocidad del salto.
+        float airVelocity = calcularVelocidadEnAire(gravitacional, QuecoRig);
+        float groundVelocity = calcularVelocidadEnTierra(gravitacional, QuecoRig);
+        //Asignamos dichas velocidades a los valores que controlan las animaciones
+        GlobalStats.currentStats.jugador.GetComponent<Animator>().SetFloat("SpeedX", airVelocity);
+        GlobalStats.currentStats.jugador.GetComponent<Animator>().SetFloat("SpeedY", groundVelocity);
 
         if (Input.GetKey(KeyCode.D))
         {
@@ -85,15 +91,53 @@ public class Move : MonoBehaviour {
         }
 
         if (Input.GetKeyDown (KeyCode.Space)) {
-			if (gravitacional.abajo)
-                QuecoRig.velocity = new Vector2(0, jumpSpeed);
-			if(gravitacional.arriba)
-                QuecoRig.velocity = new Vector2(0, -jumpSpeed);
-			if(gravitacional.izq)
-                QuecoRig.velocity = new Vector2(jumpSpeed, 0);
-			if(gravitacional.der)
-                QuecoRig.velocity = new Vector2(-jumpSpeed, 0);
+            if(GlobalStats.currentStats.jugador.GetComponent<Animator>().GetBool("Ground") == true)
+            {
+                if (gravitacional.abajo)
+                    QuecoRig.velocity = new Vector2(0, jumpSpeed);
+                if (gravitacional.arriba)
+                    QuecoRig.velocity = new Vector2(0, -jumpSpeed);
+                if (gravitacional.izq)
+                    QuecoRig.velocity = new Vector2(jumpSpeed, 0);
+                if (gravitacional.der)
+                    QuecoRig.velocity = new Vector2(-jumpSpeed, 0);
+                GlobalStats.currentStats.jugador.GetComponent<Animator>().SetBool("Ground", false);
+            }
 		}
 
+        if (QuecoRig.velocity == Vector2.zero)
+        {
+            QuecoRig.GetComponent<Animator>().SetBool("isIdle", true);
+        }
+    }
+
+    /*
+     * Esto lo sustituiremos después por un Vector2 y lo devolveremos, dando un SpeedX y SpeedY
+     * */
+
+    // Esta función la vamos a calcular para saber cuándo estamos al inicio del salto o al final
+    float calcularVelocidadEnAire(GravChange gravitacional, Rigidbody2D QuecoRig)
+    {
+        if (gravitacional.abajo)
+            return QuecoRig.velocity.y;
+        else if (gravitacional.arriba)
+            return -QuecoRig.velocity.y;
+        else if (gravitacional.izq)
+            return QuecoRig.velocity.x;
+        else
+            return -QuecoRig.velocity.x;
+    }
+
+    // Esta función indicará qué velocidad tenemos en tierra
+    float calcularVelocidadEnTierra(GravChange gravitacional, Rigidbody2D QuecoRig)
+    {
+        if (gravitacional.abajo)
+            return Mathf.Abs(QuecoRig.velocity.x);
+        else if (gravitacional.arriba)
+            return Mathf.Abs(QuecoRig.velocity.x);
+        else if (gravitacional.izq)
+            return Mathf.Abs(QuecoRig.velocity.y);
+        else
+            return Mathf.Abs(QuecoRig.velocity.y);
     }
 }

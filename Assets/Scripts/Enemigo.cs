@@ -25,26 +25,66 @@ public class Enemigo : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        //Debug.Log(Vector2.Distance(transform.position, PrefabManager.currentPrefabs.player.transform.position));
+        //Debug.Log(Vector2.Distance(transform.position, GlobalStats.currentStats.jugador.transform.position));
         //Debug.Log(moveSpeed);
         //Debug.Log(player.transform.position);
+        GravChange gravitacional = GetComponent<GravChange>();
+
         if (puntosVida <= 0)
         {
             SoundManager.currentSounds.enemyDeath.Play();
             transform.localScale = new Vector2(0,0);
-            PrefabManager.currentPrefabs.player.GetComponent<Jugador>().subirExp(expAtDeath);
+            GlobalStats.currentStats.jugador.GetComponent<Jugador>().subirExp(expAtDeath);
             Destroy(this);
         }
 
-        if ((Mathf.Abs(Vector2.Distance(transform.position, PrefabManager.currentPrefabs.player.transform.position)) <= minDist) || isHit)
+        if ((Mathf.Abs(Vector2.Distance(transform.position, GlobalStats.currentStats.jugador.transform.position)) <= minDist) || isHit)
         {
-            if (transform.position.x - PrefabManager.currentPrefabs.player.transform.position.x > 0)
+            try
             {
-                myRB.velocity = new Vector2(-1.5f * moveSpeed, myRB.velocity.y);
+                this.GetComponent<Animator>().SetBool("Attack", true);
             }
-            else if (transform.position.x - PrefabManager.currentPrefabs.player.transform.position.x != 0)
+            catch
             {
-                myRB.velocity = new Vector2(1.5f * moveSpeed, myRB.velocity.y);
+                Debug.Log("Esto es un pincho xD");
+            }
+            if (gravitacional.abajo || gravitacional.arriba)
+            {
+                if (transform.position.x - GlobalStats.currentStats.jugador.transform.position.x > 0)
+                {
+                    if (gravitacional.abajo)
+                        this.gameObject.transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+                    else if (gravitacional.arriba)
+                        this.gameObject.transform.localScale = new Vector2(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
+                    myRB.velocity = new Vector2(-1.5f * moveSpeed, myRB.velocity.y);
+                }
+                else if (transform.position.x - GlobalStats.currentStats.jugador.transform.position.x != 0)
+                {
+                    if (gravitacional.abajo)
+                        this.gameObject.transform.localScale = new Vector2(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
+                    else if (gravitacional.arriba)
+                        this.gameObject.transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+                    myRB.velocity = new Vector2(1.5f * moveSpeed, myRB.velocity.y);
+                }
+            }
+            if (gravitacional.izq || gravitacional.der)
+            {
+                if (transform.position.y - GlobalStats.currentStats.jugador.transform.position.y > 0)
+                {
+                    if (gravitacional.izq)
+                        this.gameObject.transform.localScale = new Vector2(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
+                    else if (gravitacional.der)
+                        this.gameObject.transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+                    myRB.velocity = new Vector2(myRB.velocity.x, -1.5f * moveSpeed);
+                }
+                else if (transform.position.y - GlobalStats.currentStats.jugador.transform.position.y != 0)
+                {
+                    if (gravitacional.izq)
+                        this.gameObject.transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), transform.localScale.y);
+                    else if (gravitacional.der)
+                        this.gameObject.transform.localScale = new Vector2(-Mathf.Abs(transform.localScale.x), transform.localScale.y);
+                    myRB.velocity = new Vector2(myRB.velocity.x, 1.5f * moveSpeed);
+                }
             }
         }
 
@@ -56,9 +96,25 @@ public class Enemigo : MonoBehaviour {
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0.3f, 0);
         puntosVida -= valorGolpe;
         if (!isCrit)
-            InitDT(valorGolpe.ToString()).GetComponent<Animator>().SetTrigger("Hit");
+        {
+            try
+            {
+                InitDT(valorGolpe.ToString()).GetComponent<Animator>().SetTrigger("Hit");
+            }
+            catch
+            {
+                Debug.Log("No pasa na de na");
+            }
+        }
         else
-            InitDT(valorGolpe.ToString()).GetComponent<Animator>().SetTrigger("Crit");
+            try
+            {
+                InitDT(valorGolpe.ToString()).GetComponent<Animator>().SetTrigger("Crit");
+            }
+            catch
+            {
+                Debug.Log("No pasa na de na");
+            }
         // Debug.Log("Tengo " + puntosVida + " puntos de vida.");
     }
 
